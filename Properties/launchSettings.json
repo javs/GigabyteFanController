@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "GigabyteFanController": {
+      "commandName": "Project",
+      "commandLineArgs": "false"
+    }
+  }
+}

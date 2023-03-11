@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="LibreHardwareMonitor\Resources\inpout32.gz" />
+    <None Remove="LibreHardwareMonitor\Resources\inpoutx64.gz" />
+    <None Remove="LibreHardwareMonitor\Resources\WinRing0.gz" />
+    <None Remove="LibreHardwareMonitor\Resources\WinRing0x64.gz" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="LibreHardwareMonitor\Resources\inpout32.gz" />
+    <EmbeddedResource Include="LibreHardwareMonitor\Resources\inpoutx64.gz" />
+    <EmbeddedResource Include="LibreHardwareMonitor\Resources\WinRing0.gz" />
+    <EmbeddedResource Include="LibreHardwareMonitor\Resources\WinRing0x64.gz" />
+  </ItemGroup>
+
+</Project>
