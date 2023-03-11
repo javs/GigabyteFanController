@@ -36,6 +36,8 @@ namespace GigabyteFanController
 
         private bool AMDEnable(bool enabled)
         {
+            Ring0.Open();
+
             if (!Ring0.WaitPciBusMutex(10))
                 return false;
 
