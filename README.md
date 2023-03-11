@@ -4,4 +4,7 @@ Some recent Gigabyte motherboards have a custom, BIOS based, fan controller that
 
 The controller is typically automatically enabled on boot/resume.
 
+Usage as Admin:
+```GigabyteFanController false```
+
 Based on code from LibreHardwareMonitor.
