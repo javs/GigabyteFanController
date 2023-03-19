@@ -1,4 +1,4 @@
-﻿using GigabyteFanController;
+﻿using LibreHardwareMonitor.Hardware.Motherboard.Lpc;
 
 bool enabled;
 
@@ -10,7 +10,7 @@ try
     return 1;
 }
 
-GigabyteController controller = new GigabyteController(GigabyteFanController.LibreHardwareMonitor.Model.B550_AORUS_PRO);
+GigabyteController controller = new GigabyteController(0xFF000000, LibreHardwareMonitor.Hardware.ProcessorFamily.AmdZen);
 
 if (!controller.Enable(enabled))
 {

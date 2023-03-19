@@ -182,7 +182,7 @@ internal static class InpOut
 
     private static bool Extract(string filePath)
     {
-        string resourceName = $"{nameof(GigabyteFanController)}.LibreHardwareMonitor.Resources.{(Software.OperatingSystem.Is64Bit ? "inpoutx64.gz" : "inpout32.gz")}";
+        string resourceName = $"GigabyteFanController.LibreHardwareMonitor.Resources.{(Software.OperatingSystem.Is64Bit ? "inpoutx64.gz" : "inpout32.gz")}";
 
         Assembly assembly = typeof(InpOut).Assembly;
         long requiredLength = 0;
