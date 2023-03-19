@@ -65,33 +65,30 @@ namespace LibreHardwareMonitor.Hardware.Motherboard.Lpc
 
             const uint IOorMemoryPortDecodeEnableRegister = 0x48;
             const uint MemoryRangePortEnableMask = 0x1 << 5;
-            const uint PCIMemoryAddressforLPCTargetCycles = 0x60;
-            const uint ROMAddressRange2 = 0x6C;
+            const uint PCIMemoryAddressforLPCTargetCyclesRegister = 0x60;
+            const uint ROMAddressRange2Register = 0x6C;
             uint ControllerFanControlAddress = _controllerBaseAddress + ControllerFanControlArea;
+            
+            uint pciAddressStart = _controllerBaseAddress >> 0x10;
+            uint pciAddressEnd = pciAddressStart + 1;
 
-            Ring0.ReadPciConfig(AmdIsaBridgeAddress, IOorMemoryPortDecodeEnableRegister, out uint originalDecodeEnable);
-            Ring0.ReadPciConfig(AmdIsaBridgeAddress, PCIMemoryAddressforLPCTargetCycles, out uint originalPCIMemoryAddress);
-            Ring0.ReadPciConfig(AmdIsaBridgeAddress, ROMAddressRange2, out uint originalROMAddress);
+            uint enabledPCIMemoryAddressRegister = pciAddressEnd << 0x10 | pciAddressStart;
+            uint enabledROMAddressRegister = 0xFFFFU << 0x10 | pciAddressEnd;
 
-            var originalPCIMemoryAddressStart = originalPCIMemoryAddress & 0xFFFF;
-            var originalPCIMemoryAddressEnd = (originalPCIMemoryAddress >> 0x10) & 0xFFFF;
+            Ring0.ReadPciConfig(AmdIsaBridgeAddress, IOorMemoryPortDecodeEnableRegister, out uint originalDecodeEnableRegister);
+            Ring0.ReadPciConfig(AmdIsaBridgeAddress, PCIMemoryAddressforLPCTargetCyclesRegister, out uint originalPCIMemoryAddressRegister);
+            Ring0.ReadPciConfig(AmdIsaBridgeAddress, ROMAddressRange2Register, out uint originalROMAddressRegister);
 
-            // The region is mapped to something else, or empty, prevent any changes
-            if (originalPCIMemoryAddressStart != _controllerBaseAddress >> 0x10
-                || (int)originalPCIMemoryAddressEnd - (int)originalPCIMemoryAddressStart < 1)
-            {
-                Ring0.ReleasePciBusMutex();
-                return false;
-            }
-
-            var originalMMIOEnabled =
-                (originalDecodeEnable & MemoryRangePortEnableMask) != 0
-                && originalROMAddress == 0xFFFFFF01;
+            bool originalMMIOEnabled =
+                (originalDecodeEnableRegister & MemoryRangePortEnableMask) != 0
+                && originalPCIMemoryAddressRegister == enabledPCIMemoryAddressRegister
+                && originalROMAddressRegister == enabledROMAddressRegister;
 
             if (!originalMMIOEnabled)
             {
-                Ring0.WritePciConfig(AmdIsaBridgeAddress, IOorMemoryPortDecodeEnableRegister, originalDecodeEnable | MemoryRangePortEnableMask);
-                Ring0.WritePciConfig(AmdIsaBridgeAddress, ROMAddressRange2, 0xFFFFFF01);
+                Ring0.WritePciConfig(AmdIsaBridgeAddress, IOorMemoryPortDecodeEnableRegister, originalDecodeEnableRegister | MemoryRangePortEnableMask);
+                Ring0.WritePciConfig(AmdIsaBridgeAddress, PCIMemoryAddressforLPCTargetCyclesRegister, enabledPCIMemoryAddressRegister);
+                Ring0.WritePciConfig(AmdIsaBridgeAddress, ROMAddressRange2Register, enabledROMAddressRegister);
             }
 
             var result = _Enable(enabled, new IntPtr(ControllerFanControlAddress));
@@ -99,8 +96,9 @@ namespace LibreHardwareMonitor.Hardware.Motherboard.Lpc
             // Restore previous values
             if (!originalMMIOEnabled)
             {
-                Ring0.WritePciConfig(AmdIsaBridgeAddress, IOorMemoryPortDecodeEnableRegister, originalDecodeEnable);
-                Ring0.WritePciConfig(AmdIsaBridgeAddress, ROMAddressRange2, originalROMAddress);
+                Ring0.WritePciConfig(AmdIsaBridgeAddress, IOorMemoryPortDecodeEnableRegister, originalDecodeEnableRegister);
+                Ring0.WritePciConfig(AmdIsaBridgeAddress, PCIMemoryAddressforLPCTargetCyclesRegister, originalROMAddressRegister);
+                Ring0.WritePciConfig(AmdIsaBridgeAddress, ROMAddressRange2Register, originalROMAddressRegister);
             }
 
             Ring0.ReleasePciBusMutex();
