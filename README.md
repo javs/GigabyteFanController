@@ -1,5 +1,8 @@
 ﻿# GigabyteFanController
 
+> **Update**
+> As of late 2023, this code has already been merged to LibreHardwareMonitor.
+
 > **Warning**
 > This only will only work on select Gigabyte AMD motherboards. It doesn't check if your motherboard is supported.<br>
 > **Only use if you are confident you have this controller on your AMD Gigabyte board, otherwise it may affect your BIOS.**<br>
